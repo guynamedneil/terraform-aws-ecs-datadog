@@ -5,6 +5,9 @@ locals {
     for pair in [
       { key = "DD_API_KEY", value = var.dd_api_key },
       { key = "DD_SITE", value = var.dd_site },
+      { key = "DD_SERVICE", value = var.dd_service },
+      { key = "DD_ENV", value = var.dd_env },
+      { key = "DD_VERSION", value = var.dd_version },
       # TODO: clusterName, ddTags, etc.
     ] : { name = pair.key, value = pair.value } if pair.value != null
   ]

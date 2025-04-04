@@ -38,6 +38,24 @@ variable "dd_environment" {
   default     = [{}]
 }
 
+variable "dd_service" {
+  description = "The task service name. Used for tagging (UST)"
+  type        = string
+  default     = null
+}
+
+variable "dd_env" {
+  description = "The task environment name. Used for tagging (UST)"
+  type        = string
+  default     = null
+}
+
+variable "dd_version" {
+  description = "The task version name. Used for tagging (UST)"
+  type        = string
+  default     = null
+}
+
 ################################################################################
 # Task Definition
 ################################################################################
@@ -113,21 +131,21 @@ variable "pid_mode" {
 # Not Fargate Compatible
 variable "placement_constraints" {
   description = "Configuration block for rules that are taken into consideration during task placement (up to max of 10). This is set at the task definition, see `placement_constraints` for setting at the service"
-  type        = list(object({
+  type = list(object({
     type       = string
     expression = string
   }))
-  default     = []
+  default = []
 }
 
 variable "proxy_configuration" {
   description = "Configuration block for the App Mesh proxy"
-  type        = object({
+  type = object({
     container_name = string
     properties     = map(any)
     type           = optional(string, "APPMESH")
   })
-  default     = null
+  default = null
 }
 
 variable "requires_compatibilities" {
