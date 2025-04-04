@@ -4,7 +4,7 @@
 
 Use this Terraform module to install Datadog Monitoring for AWS Elastic Container Service tasks.
 
-This Terraform module wraps the [aws_ecs_task_definition](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_function) resource and automatically configures your task definition for Datadog Monitoring by:
+This Terraform module wraps the [aws_ecs_task_definition](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_task_definition) resource and automatically configures your task definition for Datadog Monitoring by:
 
 * Adding the Datadog Agent container
   * Optionally, the Fluentbit log router
@@ -28,7 +28,7 @@ module "ecs_task" {
   ]
 
   # Task Configuration
-  name = "example-app"
+  family = "example-app"
   container_definitions = {
     dogstatsd-app = {
       name      = "datadog-dogstatsd-app",

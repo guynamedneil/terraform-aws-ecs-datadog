@@ -7,6 +7,7 @@ module "ecs_task" {
 
   # Configure Datadog
   dd_api_key = var.dd_api_key
+  dd_api_key_secret_arn = var.dd_api_key_secret_arn
   dd_site    = var.dd_site
   dd_service = var.dd_service
 
@@ -18,7 +19,7 @@ module "ecs_task" {
   ]
 
   # Configure Task Definition
-  family = "my-app"
+  family = "datadog-terraform-app"
   container_definitions = {
     dogstatsd = {
       name      = "datadog-dogstatsd-app",
