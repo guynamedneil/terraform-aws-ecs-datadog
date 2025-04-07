@@ -23,8 +23,9 @@ resource "aws_ecs_task_definition" "this" {
 
   enable_fault_injection = var.enable_fault_injection
 
-  # If we editted the provided execution role, use that, otherwise use the one we created
-  execution_role_arn = local.edit_execution_role ? var.execution_role_arn : aws_iam_role.ecs_task_execution[0].arn
+  # Prioritize the user-provided task execution role over the one created by the module
+  execution_role_arn = var.execution_role_arn != null ? var.execution_role_arn : (length(aws_iam_role.new_ecs_task_execution_role) > 0 ? aws_iam_role.new_ecs_task_execution_role[0].arn : null)
+
   family             = var.family
 
   # Fargate incompatible parameter
@@ -74,7 +75,8 @@ resource "aws_ecs_task_definition" "this" {
   }
 
   skip_destroy  = var.skip_destroy
-  task_role_arn = var.task_role_arn
+  # Prioritize the user-provided task role over the one created by the module
+  task_role_arn = var.task_role_arn != null ? var.task_role_arn : (length(aws_iam_role.new_ecs_task_role) > 0 ? aws_iam_role.new_ecs_task_role[0].arn : null)
 
   dynamic "volume" {
     for_each = var.volume
@@ -139,11 +141,8 @@ resource "aws_ecs_task_definition" "this" {
   tags = var.tags
 
   depends_on = [
-    aws_iam_role_policy_attachment.ecs_task_execution_policy,
-    aws_iam_role_policy_attachment.existing_role_dd_secret,
-    aws_iam_role_policy_attachment.new_role_ecs_task_permissions,
-    aws_iam_role_policy_attachment.new_role_dd_secret,
-    aws_iam_role_policy_attachment.new_role_ecs_task_permissions
+    aws_iam_role.new_ecs_task_role,
+    aws_iam_role.new_ecs_task_execution_role,
   ]
 
   lifecycle {
