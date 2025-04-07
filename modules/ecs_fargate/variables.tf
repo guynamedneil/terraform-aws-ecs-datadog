@@ -56,6 +56,46 @@ variable "dd_version" {
   default     = null
 }
 
+variable "dd_dogstatsd" {
+  description = "Configuration for Datadog DogStatsD"
+  type = object({
+    enabled                  = optional(bool, true)
+    origin_detection_enabled = optional(bool, true)
+    dogstatsd_cardinality    = optional(string, "orchestrator")
+    socket_enabled           = optional(bool, true)
+  })
+  default = {
+    enabled                  = true
+    origin_detection_enabled = true
+    dogstatsd_cardinality    = "orchestrator"
+    socket_enabled           = true
+  }
+  validation {
+    condition     = var.dd_dogstatsd != null
+    error_message = "The Datadog Dogstatsd configuration must be defined."
+  }
+  validation {
+    condition = var.dd_dogstatsd.dogstatsd_cardinality == "low" || var.dd_dogstatsd.dogstatsd_cardinality == "orchestrator" || var.dd_dogstatsd.dogstatsd_cardinality == "high"
+    error_message = "The Datadog Dogstatsd cardinality must be one of 'low', 'orchestrator', or 'high'."
+  }
+}
+
+variable "dd_apm" {
+  description = "Configuration for Datadog APM"
+  type = object({
+    enabled        = optional(bool, true)
+    socket_enabled = optional(bool, true)
+  })
+  default = {
+    enabled        = true
+    socket_enabled = true
+  }
+  validation {
+    condition     = var.dd_apm != null
+    error_message = "The Datadog APM configuration must be defined."
+  }
+}
+
 ################################################################################
 # Task Definition
 ################################################################################
@@ -156,7 +196,10 @@ variable "requires_compatibilities" {
 
 variable "runtime_platform" {
   description = "Configuration block for `runtime_platform` that containers in your task may use"
-  type        = any
+  type = object({
+    cpu_architecture        = string
+    operating_system_family = string
+  })
   default = {
     operating_system_family = "LINUX"
     cpu_architecture        = "X86_64"
@@ -187,8 +230,8 @@ variable "track_latest" {
   default     = false
 }
 
-variable "volume" {
+variable "volumes" {
   description = "Configuration block for volumes that containers in your task may use"
   type        = any
-  default     = {}
+  default     = null
 }

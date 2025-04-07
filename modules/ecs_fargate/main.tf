@@ -7,7 +7,7 @@ resource "aws_ecs_task_definition" "this" {
   container_definitions = jsonencode(
     concat(
       [local.dd_agent_container],
-      [for k, v in var.container_definitions : v],
+      [for k, v in local.modified_container_definitions : v],
     )
   )
 
@@ -77,7 +77,7 @@ resource "aws_ecs_task_definition" "this" {
   task_role_arn = var.task_role_arn
 
   dynamic "volume" {
-    for_each = var.volume
+    for_each = local.modified_volumes
 
     content {
       dynamic "docker_volume_configuration" {
