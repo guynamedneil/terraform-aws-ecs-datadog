@@ -18,6 +18,15 @@ module "ecs_task" {
     },
   ]
 
+  dd_dogstatsd = {
+    dogstatsd_cardinality = "high",
+    origin_detection_enabled = true,
+  }
+
+  dd_apm = {
+    enabled = true,
+  }
+
   # Configure Task Definition
   family = "datadog-terraform-app"
   container_definitions = {
