@@ -39,15 +39,15 @@ resource "aws_ecs_task_definition" "this" {
 
   family = var.family
 
-  # Fargate incompatible parameter
-  dynamic "inference_accelerator" {
-    for_each = var.inference_accelerator != null ? var.inference_accelerator : []
+  # Fargate incompatible parameter on v6.0.0
+  # dynamic "inference_accelerator" {
+  #   for_each = var.inference_accelerator != null ? var.inference_accelerator : []
 
-    content {
-      device_name = inference_accelerator.value.device_name
-      device_type = inference_accelerator.value.device_type
-    }
-  }
+  #   content {
+  #     device_name = inference_accelerator.value.device_name
+  #     device_type = inference_accelerator.value.device_type
+  #   }
+  # }
 
   # Fargate incompatible parameter
   ipc_mode     = var.ipc_mode

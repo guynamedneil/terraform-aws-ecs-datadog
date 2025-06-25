@@ -7,6 +7,7 @@ package test
 
 import (
 	"log"
+	"os"
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
@@ -17,6 +18,7 @@ import (
 type ECSFargateSuite struct {
 	suite.Suite
 	terraformOptions *terraform.Options
+	testPrefix       string
 }
 
 // TestECSFargateSuite is the entry point for the test suite
@@ -28,17 +30,27 @@ func TestECSFargateSuite(t *testing.T) {
 func (s *ECSFargateSuite) SetupSuite() {
 	log.Println("Setting up test suite resources...")
 
+	// All resources must be prefixed with terraform-test
+	s.testPrefix = "terraform-test"
+	ciJobID := os.Getenv("CI_JOB_ID")
+	if ciJobID != "" {
+		s.testPrefix = s.testPrefix + "-" + ciJobID
+	}
+
 	// Define the Terraform options for the suite
 	s.terraformOptions = &terraform.Options{
 		// Path to the smoke_tests directory
 		TerraformDir: "../smoke_tests/ecs_fargate",
 		// Variables to pass to the Terraform module
 		Vars: map[string]interface{}{
-			"dd_api_key": "test-api-key",
-			"dd_service": "test-service",
-			"dd_site":    "datadoghq.com",
+			"dd_api_key":  "test-api-key",
+			"dd_service":  "test-service",
+			"dd_site":     "datadoghq.com",
+			"test_prefix": s.testPrefix,
 		},
-		NoColor: true,
+		RetryableTerraformErrors: map[string]string{
+			"couldn't find resource": "terratest could not find the resource. check for access denied errors in cloudtrial",
+		},
 	}
 
 	// Run terraform init and apply

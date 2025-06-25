@@ -1,0 +1,24 @@
+stages:
+  - test
+
+tests:
+  stage: test
+  image: registry.ddbuild.io/ci-containers-project:v50051243-ace27e7-v1.22
+  tags:
+    - "arch:amd64"
+  before_script:
+    # Setup Terraform
+    - curl -fsSL https://releases.hashicorp.com/terraform/1.6.6/terraform_1.6.6_linux_amd64.zip -o terraform.zip
+    - unzip terraform.zip > /dev/null
+    - mv terraform /usr/local/bin/terraform
+    - chmod +x /usr/local/bin/terraform
+    - terraform version
+
+    # Setup AWS credentials
+    - echo "Assuming ddbuild-terraform-aws-ecs-datadog role"
+    - roleoutput=$(aws sts assume-role --role-arn arn:aws:iam::669783387624:role/ddbuild-terraform-aws-ecs-datadog --external-id ddbuild-terraform-aws-ecs-datadog-ci --role-session-name terraform-aws-ecs-datadog-ci)
+    - export AWS_ACCESS_KEY_ID="$(echo "$roleoutput" | jq -r '.Credentials.AccessKeyId')"
+    - export AWS_SECRET_ACCESS_KEY="$(echo "$roleoutput" | jq -r '.Credentials.SecretAccessKey')"
+    - export AWS_SESSION_TOKEN="$(echo "$roleoutput" | jq -r '.Credentials.SessionToken')"
+  script:
+    - make test
