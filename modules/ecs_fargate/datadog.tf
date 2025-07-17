@@ -35,8 +35,9 @@ locals {
           retry_limit = "2"
         },
         var.dd_log_collection.fluentbit_config.log_driver_configuration.tls == true ? { TLS = "on" } : {},
-        var.dd_log_collection.fluentbit_config.log_driver_configuration.service_name != null ? { dd_service = var.dd_log_collection.fluentbit_config.log_driver_configuration.service_name } : {},
-        var.dd_log_collection.fluentbit_config.log_driver_configuration.source_name != null ? { dd_source = var.dd_log_collection.fluentbit_config.log_driver_configuration.source_name } : {},
+        var.dd_env != null ? { dd_env = var.dd_env } : {},
+        var.dd_service != null ? { dd_service = var.dd_service } : {},
+        { dd_source = "ecs" },
         var.dd_log_collection.fluentbit_config.log_driver_configuration.message_key != null ? { dd_message_key = var.dd_log_collection.fluentbit_config.log_driver_configuration.message_key } : {},
         var.dd_log_collection.fluentbit_config.log_driver_configuration.compress != null ? { compress = var.dd_log_collection.fluentbit_config.log_driver_configuration.compress } : {},
         var.dd_tags != null ? { dd_tags = var.dd_tags } : {},
